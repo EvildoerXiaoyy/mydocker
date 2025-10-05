@@ -196,21 +196,21 @@ compile_program() {
         fi
         
         # 执行编译
-        cd "docker-learning/$program_name" 2>/dev/null || {
-            log_error "找不到源码目录: docker-learning/$program_name"
+        cd "$program_name" 2>/dev/null || {
+            log_error "找不到源码目录: $program_name"
             continue
         }
         
         env GOOS=$goos GOARCH=$goarch go build \
             -ldflags="-s -w" \
-            -o "../../build/$program_name/${platform}/${output_name}" \
+            -o "../build/$program_name/${platform}/${output_name}" \
             "$source_file" 2>/dev/null || {
             log_error "编译 $program_name for $platform 失败"
-            cd ../..
+            cd ..
             continue
         }
         
-        cd ../..
+        cd ..
         
         # 创建压缩包
         cd "build/$program_name"
@@ -295,6 +295,31 @@ verify_upload() {
     fi
 }
 
+# 清理打包文件
+clean_packages() {
+    log_step "清理本地打包文件..."
+    
+    if [ -d "build" ]; then
+        local cleaned_files=0
+        
+        # 清理所有 .tar.gz 和 .zip 文件
+        find build -name "*.tar.gz" -type f -delete 2>/dev/null && ((cleaned_files++))
+        find build -name "*.zip" -type f -delete 2>/dev/null && ((cleaned_files++))
+        
+        # 清理空的平台目录
+        find build -type d -empty -delete 2>/dev/null
+        
+        if [ "$cleaned_files" -gt 0 ] || [ -d "build" ]; then
+            log_success "打包文件清理完成"
+            log_info "保留可执行文件在 build/ 目录中"
+        else
+            log_info "没有需要清理的打包文件"
+        fi
+    else
+        log_info "构建目录不存在，无需清理"
+    fi
+}
+
 # 主函数
 main() {
     local program_name=${1:-"help"}
@@ -332,7 +357,7 @@ main() {
             log_step "编译所有程序..."
             
             # 编译 Docker 演示程序
-            if [ -f "docker-learning/docker_demo/docker_demo.go" ]; then
+            if [ -f "docker_demo/docker_demo.go" ]; then
                 compile_program "docker_demo" "docker_demo.go"
                 upload_to_server "docker_demo"
             fi
@@ -346,6 +371,9 @@ main() {
     
     # 验证上传结果
     verify_upload
+    
+    # 清理打包文件
+    clean_packages
     
     echo ""
     echo -e "${GREEN}==============================================================================${NC}"

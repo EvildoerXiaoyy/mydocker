@@ -34,6 +34,10 @@ go run docker_demo.go
 ### 交叉编译和部署
 
 ```bash
+# 配置部署信息（首次使用）
+cp config.env.example config.env
+# 编辑 config.env 文件，填入实际的服务器信息
+
 # 编译 Docker 演示程序
 ./cross-compile.sh docker_demo
 
@@ -43,6 +47,23 @@ go run docker_demo.go
 # 查看帮助
 ./cross-compile.sh help
 ```
+
+#### 脚本功能特性
+
+- ✅ **多平台编译**: 支持 Linux、Windows、macOS (Intel/Apple Silicon)
+- ✅ **自动部署**: 编译完成后自动上传到指定服务器
+- ✅ **配置管理**: 通过配置文件管理部署参数
+- ✅ **智能清理**: 上传完成后自动清理本地打包文件
+- ✅ **错误处理**: 完善的错误检查和日志输出
+- ✅ **版本信息**: 自动生成包含 Git 版本和编译信息的文件
+
+#### 支持的目标平台
+
+| 平台 | 架构 | 输出格式 |
+|------|------|----------|
+| Linux | amd64, arm64 | tar.gz |
+| Windows | amd64 | zip |
+| macOS | amd64, arm64 | tar.gz |
 
 ## 📚 学习内容
 

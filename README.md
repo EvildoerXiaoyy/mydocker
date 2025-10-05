@@ -12,7 +12,7 @@ docker-learning/
 │   └── docker_demo.go        # 完整的 Docker 容器技术演示
 ├── main.go                   # 简单的 Hello World 程序
 ├── cross-compile.sh          # 交叉编译和部署脚本
-├── deploy-config.sh          # 部署配置文件
+├── config.env.example        # 配置文件模板
 ├── DEPLOY_README.md          # 详细部署说明
 ├── PROJECT_SUMMARY.md        # 项目总结
 ├── go.mod                    # Go 模块文件

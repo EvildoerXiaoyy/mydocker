@@ -46,6 +46,8 @@ temp/
 
 # Configuration files with sensitive information
 deploy-config.sh
+config.env
+*.env
 
 # Backup files
 *.bak

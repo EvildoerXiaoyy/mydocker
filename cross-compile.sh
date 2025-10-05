@@ -28,11 +28,29 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# 配置信息
-TARGET_SERVER="192.168.64.20"
-TARGET_USER="root"
-TARGET_PATH="/root/samuel/myDocker"
-PROJECT_NAME="test-go"
+# 加载配置
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="$SCRIPT_DIR/config.env"
+
+# 默认配置
+TARGET_SERVER=${TARGET_SERVER:-"192.168.64.20"}
+TARGET_USER=${TARGET_USER:-"root"}
+TARGET_PATH=${TARGET_PATH:-"/root/samuel/myDocker"}
+PROJECT_NAME=${PROJECT_NAME:-"test-go"}
+
+# 如果配置文件存在，则加载
+if [ -f "$CONFIG_FILE" ]; then
+    echo "[INFO] 加载部署配置: $CONFIG_FILE"
+    source "$CONFIG_FILE"
+    echo "[INFO] 配置已加载："
+    echo "[INFO] 目标服务器: $TARGET_SERVER"
+    echo "[INFO] 目标路径: $TARGET_PATH"
+    echo "[INFO] 用户: $TARGET_USER"
+    echo "[INFO] 项目名称: $PROJECT_NAME"
+else
+    echo "[WARNING] 配置文件不存在: $CONFIG_FILE"
+    echo "[INFO] 使用默认配置"
+fi
 
 # 支持的平台和架构 (使用普通数组以兼容 macOS)
 PLATFORMS=(
@@ -178,18 +196,21 @@ compile_program() {
         fi
         
         # 执行编译
-        cd "$program_name" 2>/dev/null || cd .
-        
-        env GOOS=$goos GOARCH=$goarch go build \
-            -ldflags="-s -w" \
-            -o "../build/$program_name/${platform}/${output_name}" \
-            "$source_file" 2>/dev/null || {
-            log_error "编译 $program_name for $platform 失败"
-            cd ..
+        cd "docker-learning/$program_name" 2>/dev/null || {
+            log_error "找不到源码目录: docker-learning/$program_name"
             continue
         }
         
-        cd ..
+        env GOOS=$goos GOARCH=$goarch go build \
+            -ldflags="-s -w" \
+            -o "../../build/$program_name/${platform}/${output_name}" \
+            "$source_file" 2>/dev/null || {
+            log_error "编译 $program_name for $platform 失败"
+            cd ../..
+            continue
+        }
+        
+        cd ../..
         
         # 创建压缩包
         cd "build/$program_name"
@@ -311,7 +332,7 @@ main() {
             log_step "编译所有程序..."
             
             # 编译 Docker 演示程序
-            if [ -f "docker_demo/docker_demo.go" ]; then
+            if [ -f "docker-learning/docker_demo/docker_demo.go" ]; then
                 compile_program "docker_demo" "docker_demo.go"
                 upload_to_server "docker_demo"
             fi

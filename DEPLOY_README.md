@@ -27,22 +27,31 @@ chmod +x cross-compile.sh
 
 ### 2. 配置服务器信息
 
-编辑 `deploy-config.sh` 文件或直接修改 `cross-compile.sh` 中的配置：
+使用新的配置文件方式：
 
 ```bash
-# 服务器配置
-TARGET_SERVER="192.168.64.20"
-TARGET_USER="root"
-TARGET_PATH="/root/samuel/myDocker"
+# 复制配置模板
+cp config.env.example config.env
+
+# 编辑配置文件，设置你的服务器信息
+nano config.env
 ```
 
-### 3. 使用配置文件
+配置文件示例：
+```bash
+# 目标服务器配置
+TARGET_SERVER="your-server-ip"
+TARGET_USER="your-username"
+TARGET_PATH="/path/to/deploy"
+
+# 项目配置
+PROJECT_NAME="test-go"
+```
+
+### 3. 运行编译
 
 ```bash
-# 加载配置
-source deploy-config.sh
-
-# 运行编译
+# 脚本会自动加载 config.env 配置
 ./cross-compile.sh main
 ```
 
@@ -109,11 +118,11 @@ source deploy-config.sh
 # 生成 SSH 密钥
 ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
-# 复制公钥到服务器
-ssh-copy-id root@192.168.64.20
+# 复制公钥到服务器（替换为你的服务器IP）
+ssh-copy-id your-user@your-server-ip
 
 # 测试连接
-ssh root@192.168.64.20
+ssh your-user@your-server-ip
 ```
 
 ### 方法 2: 密码认证
@@ -196,11 +205,11 @@ PLATFORMS=(
 ### 问题 1: SSH 连接失败
 
 ```bash
-# 检查 SSH 服务
-ssh -v root@192.168.64.20
+# 检查 SSH 服务（替换为你的服务器IP）
+ssh -v your-user@your-server-ip
 
 # 检查防火墙
-telnet 192.168.64.20 22
+telnet your-server-ip 22
 
 # 检查密钥
 ssh-add -l
@@ -225,8 +234,8 @@ go clean -cache
 # 检查脚本权限
 ls -la cross-compile.sh
 
-# 检查目标目录权限
-ssh root@192.168.64.20 "ls -la /root/samuel/myDocker"
+# 检查目标目录权限（替换为你的配置）
+ssh your-user@your-server-ip "ls -la /path/to/deploy"
 ```
 
 ## 📊 监控和日志
@@ -237,8 +246,8 @@ ssh root@192.168.64.20 "ls -la /root/samuel/myDocker"
 # 本地编译结果
 ls -la build/
 
-# 服务器上的文件
-ssh root@192.168.64.20 "ls -la /root/samuel/myDocker/"
+# 服务器上的文件（替换为你的配置）
+ssh your-user@your-server-ip "ls -la /path/to/deploy/"
 ```
 
 ### 版本信息

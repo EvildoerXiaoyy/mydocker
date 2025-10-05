@@ -123,11 +123,26 @@ go run docker_demo.go
 项目支持自动化部署到指定服务器：
 
 ```bash
-# 配置服务器信息
-source deploy-config.sh
+# 配置服务器信息（首次需要编辑 config.env 文件）
+cp config.env.example config.env  # 如果有模板文件
+# 编辑 config.env 文件，设置服务器信息
 
 # 编译并部署
 ./cross-compile.sh docker_demo
+```
+
+### 配置文件说明
+
+创建 `config.env` 文件来配置部署参数：
+
+```bash
+# 目标服务器配置
+TARGET_SERVER="your-server-ip"
+TARGET_USER="your-username"
+TARGET_PATH="/path/to/deploy"
+
+# 项目配置
+PROJECT_NAME="your-project-name"
 ```
 
 ## 🎯 学习目标

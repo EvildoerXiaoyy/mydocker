@@ -89,10 +89,11 @@ func (rm *ResourceManager) Cleanup() {
 		// 等待一下确保进程已经移出
 		time.Sleep(100 * time.Millisecond)
 		
-		// 现在可以安全删除 cgroup
-		if err := os.RemoveAll(cgroup); err != nil {
+		// 现在可以安全删除 cgroup - 使用 rmdir 而不是 RemoveAll
+		if err := syscall.Rmdir(cgroup); err != nil {
 			fmt.Printf("❌ 删除 cgroup 失败 %s: %v\n", cgroup, err)
-			fmt.Printf("💡 提示：可能需要手动清理，或者进程仍在使用中\n")
+			fmt.Printf("💡 提示：Linux cgroup 只能使用 rmdir 删除，且必须为空目录\n")
+			fmt.Printf("💡 手动清理命令：sudo rmdir %s\n", cgroup)
 		} else {
 			fmt.Printf("✅ 删除 cgroup: %s\n", cgroup)
 		}

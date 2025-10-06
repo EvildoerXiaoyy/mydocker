@@ -32,11 +32,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="$SCRIPT_DIR/config.env"
 
-# 默认配置
-TARGET_SERVER=${TARGET_SERVER:-"192.168.64.20"}
-TARGET_USER=${TARGET_USER:-"root"}
-TARGET_PATH=${TARGET_PATH:-"/root/samuel/myDocker"}
-PROJECT_NAME=${PROJECT_NAME:-"test-go"}
+
 
 # 如果配置文件存在，则加载
 if [ -f "$CONFIG_FILE" ]; then
@@ -48,17 +44,14 @@ if [ -f "$CONFIG_FILE" ]; then
     echo "[INFO] 用户: $TARGET_USER"
     echo "[INFO] 项目名称: $PROJECT_NAME"
 else
-    echo "[WARNING] 配置文件不存在: $CONFIG_FILE"
-    echo "[INFO] 使用默认配置"
+    log_error "[WARNING] 配置文件不存在: $CONFIG_FILE"
+    exit 1
 fi
 
-# 支持的平台和架构 (使用普通数组以兼容 macOS)
+# 支持的平台和架构 (Docker Demo 主要针对 Linux)
 PLATFORMS=(
     "linux-amd64:linux/amd64"
     "linux-arm64:linux/arm64"
-    "windows-amd64:windows/amd64"
-    "darwin-amd64:darwin/amd64"
-    "darwin-arm64:darwin/amd64"
 )
 
 # 日志函数

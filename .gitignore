@@ -76,7 +76,6 @@ coverage.out
 tmp/
 
 # Compiled binaries
-docker_demo
 main
 docker_demo.exe
 main.exe

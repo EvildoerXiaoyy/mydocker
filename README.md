@@ -7,14 +7,16 @@
 ## 📁 项目结构
 
 ```
-docker-learning/
+test-go/                      # 项目根目录
 ├── docker_demo/              # Docker 技术演示程序
-│   └── docker_demo.go        # 完整的 Docker 容器技术演示
-├── main.go                   # 简单的 Hello World 程序
+│   ├── docker_demo.go        # Docker 容器技术演示源码
+│   └── README.md             # Docker 演示程序说明
 ├── cross-compile.sh          # 交叉编译和部署脚本
+├── config.env                # 部署配置文件
 ├── config.env.example        # 配置文件模板
 ├── DEPLOY_README.md          # 详细部署说明
 ├── PROJECT_SUMMARY.md        # 项目总结
+├── README.md                 # 项目说明文档
 ├── go.mod                    # Go 模块文件
 └── launch.json               # VS Code 调试配置
 ```

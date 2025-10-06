@@ -1,34 +1,8 @@
 # Docker 容器技术演示程序
 
-这是一个展示 Docker 容器技术核心概念和实现原理的 Go 程序。
+这是项目中的核心演示程序，详细展示 Docker 容器技术的核心概念和实现原理。
 
-## 功能特性
-
-本程序演示了 Docker 容器技术的核心组件：
-
-### 1. Linux Namespaces（资源隔离）
-- **PID Namespace**: 进程 ID 空间隔离
-- **Network Namespace**: 网络设备、IP 地址、路由表隔离
-- **Mount Namespace**: 文件系统挂载点隔离
-- **UTS Namespace**: 主机名和域名隔离
-- **IPC Namespace**: 进程间通信资源隔离
-- **User Namespace**: 用户和组 ID 隔离
-
-### 2. Cgroups（资源限制）
-- CPU 使用限制
-- 内存使用限制
-- 磁盘 I/O 限制
-- 网络带宽限制
-
-### 3. UnionFS（分层文件系统）
-- 基础镜像层共享
-- 写时复制（Copy-on-Write）
-- 镜像分层存储
-
-### 4. 容器根文件系统
-- 基本目录结构创建
-- 系统配置文件
-- 设备文件管理
+> 📋 **概述**: 本程序是 `docker_demo.go` 的详细使用说明。查看项目根目录的 `README.md` 了解项目整体介绍。
 
 ## 系统要求
 

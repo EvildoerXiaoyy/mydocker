@@ -83,11 +83,29 @@ func (rm *ResourceManager) Cleanup() {
 				} else {
 					fmt.Printf("✅ 将进程 %d 移出 cgroup\n", pid)
 				}
+			} else {
+				// 如果父 cgroup 不存在，尝试移到根 cgroup
+				rootTasksFile := "/sys/fs/cgroup/memory/cgroup.procs"
+				if _, err := os.Stat(rootTasksFile); err == nil {
+					pid := os.Getpid()
+					if err := ioutil.WriteFile(rootTasksFile, []byte(fmt.Sprintf("%d", pid)), 0644); err != nil {
+						fmt.Printf("⚠️  将进程移出 cgroup 失败: %v\n", err)
+					} else {
+						fmt.Printf("✅ 将进程 %d 移到根 cgroup\n", pid)
+					}
+				}
 			}
 		}
 		
 		// 等待一下确保进程已经移出
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
+		
+		// 检查 cgroup 是否为空
+		if content, err := ioutil.ReadFile(tasksFile); err == nil {
+			if len(content) > 0 {
+				fmt.Printf("⚠️  Cgroup 仍有进程: %s", string(content))
+			}
+		}
 		
 		// 现在可以安全删除 cgroup - 使用 rmdir 而不是 RemoveAll
 		if err := syscall.Rmdir(cgroup); err != nil {

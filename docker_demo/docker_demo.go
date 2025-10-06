@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"syscall"
+	"time"
 )
 
 // isLinux 检查是否在 Linux 系统上运行
@@ -68,6 +69,35 @@ func (rm *ResourceManager) AddNamespace(nsType string) {
 func (rm *ResourceManager) Cleanup() {
 	fmt.Println("🧹 开始清理演示资源...")
 	
+	// 清理 cgroup - 必须在清理挂载点之前，并且先移出进程
+	for _, cgroup := range rm.cgroups {
+		// 先将当前进程移出 cgroup
+		tasksFile := filepath.Join(cgroup, "cgroup.procs")
+		if _, err := os.Stat(tasksFile); err == nil {
+			// 尝试将进程移到父 cgroup（通常是根 cgroup）
+			parentTasksFile := filepath.Join(filepath.Dir(cgroup), "..", "cgroup.procs")
+			if _, err := os.Stat(parentTasksFile); err == nil {
+				pid := os.Getpid()
+				if err := ioutil.WriteFile(parentTasksFile, []byte(fmt.Sprintf("%d", pid)), 0644); err != nil {
+					fmt.Printf("⚠️  将进程移出 cgroup 失败: %v\n", err)
+				} else {
+					fmt.Printf("✅ 将进程 %d 移出 cgroup\n", pid)
+				}
+			}
+		}
+		
+		// 等待一下确保进程已经移出
+		time.Sleep(100 * time.Millisecond)
+		
+		// 现在可以安全删除 cgroup
+		if err := os.RemoveAll(cgroup); err != nil {
+			fmt.Printf("❌ 删除 cgroup 失败 %s: %v\n", cgroup, err)
+			fmt.Printf("💡 提示：可能需要手动清理，或者进程仍在使用中\n")
+		} else {
+			fmt.Printf("✅ 删除 cgroup: %s\n", cgroup)
+		}
+	}
+	
 	// 清理挂载点
 	for i := len(rm.mountPoints) - 1; i >= 0; i-- {
 		mount := rm.mountPoints[i]
@@ -75,15 +105,6 @@ func (rm *ResourceManager) Cleanup() {
 			fmt.Printf("❌ 卸载挂载点失败 %s: %v\n", mount, err)
 		} else {
 			fmt.Printf("✅ 卸载挂载点: %s\n", mount)
-		}
-	}
-	
-	// 清理 cgroup
-	for _, cgroup := range rm.cgroups {
-		if err := os.RemoveAll(cgroup); err != nil {
-			fmt.Printf("❌ 删除 cgroup 失败 %s: %v\n", cgroup, err)
-		} else {
-			fmt.Printf("✅ 删除 cgroup: %s\n", cgroup)
 		}
 	}
 	

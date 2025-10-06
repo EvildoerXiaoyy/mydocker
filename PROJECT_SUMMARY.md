@@ -148,9 +148,9 @@ Go 程序交叉编译和部署脚本
 ### 服务器配置
 
 ```bash
-TARGET_SERVER="192.168.64.20"    # 目标服务器 IP
+TARGET_SERVER="you-server-ip"    # 目标服务器 IP
 TARGET_USER="root"               # SSH 用户名
-TARGET_PATH="/root/samuel/myDocker"  # 目标路径
+TARGET_PATH="you-server-path"  # 目标路径
 ```
 
 ### 平台配置
@@ -159,9 +159,6 @@ TARGET_PATH="/root/samuel/myDocker"  # 目标路径
 PLATFORMS=(
     "linux-amd64:linux/amd64"
     "linux-arm64:linux/arm64"
-    "windows-amd64:windows/amd64"
-    "darwin-amd64:darwin/amd64"
-    "darwin-arm64:darwin/amd64"
 )
 ```
 
